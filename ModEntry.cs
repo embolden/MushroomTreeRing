@@ -110,7 +110,7 @@ namespace MushroomTreeRing
                 double rand = Game1.random.NextDouble();
                 Monitor.Log($"Random: {rand}", LogLevel.Debug);
                 Monitor.Log($"Less than: {(rand < chanceToTransform)}", LogLevel.Debug);
-                if (rand > chanceToTransform) { continue; }
+                if (rand > Math.Max(0.01, chanceToTransform)) { continue; }
 
                 TerrainFeature feature = environment.terrainFeatures.Pairs.ElementAt(Game1.random.Next(environment.terrainFeatures.Count())).Value;
 
