@@ -98,9 +98,9 @@ namespace MushroomTreeRing
                 basePercentChance = 0.01;
             }
 
-            double chanceFivePercentMaxBonus = 0.00083 * chances;
-            double foragingTwoPointFiveMaxBonus = (double)Farmer.foragingSkill / 400;
-            double chanceToTransform = basePercentChance + chanceFivePercentMaxBonus + foragingTwoPointFiveMaxBonus;
+            double chanceFivePercentMaxBonus = 0.0025 * chances;
+            double foragingTwoPercentMaxBonus = (double)Farmer.foragingSkill / 500;
+            double chanceToTransform = basePercentChance + chanceFivePercentMaxBonus + foragingTwoPercentMaxBonus;
 
             Monitor.Log($"Base: {basePercentChance}", _logLevel);
             Monitor.Log($"Chance Bonus: {chanceFivePercentMaxBonus}", _logLevel);
