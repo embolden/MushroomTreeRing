@@ -7,7 +7,7 @@
 	"EntryDll": "MushroomTreeRing.dll",
 	"MinimumApiVersion": "3.4.0",
 	"Dependencies": [],
-	"UpdateKeys": [],
+	"UpdateKeys": [ "Nexus:6023" ],
 	"Dependencies": [
 		{
 			"UniqueID": "Platonymous.Toolkit",
