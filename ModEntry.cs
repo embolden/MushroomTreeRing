@@ -71,10 +71,11 @@ namespace MushroomTreeRing
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
+            if (countEquippedRings() <= 0) { return; }
+
             GameLocation environment = Game1.getFarm();
 
             Monitor.Log($"Terrain features: {environment.terrainFeatures.Count()}", _logLevel);
-
             if (environment.terrainFeatures.Count() <= 0) { return; }
 
             Monitor.Log($"Day Ending: {chances}", _logLevel);
