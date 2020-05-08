@@ -190,8 +190,8 @@ namespace MushroomTreeRing
         private void Build(IReadOnlyDictionary<string, string> additionalSaveData)
         {
             Category = -96;
-            Name = "Mushroom Tree Ring";
-            description = "Increase the chance of getting a mushroom tree if you wear it during the day.";
+            Name = "Mushroom King's Ring";
+            description = "Embued with energy from the Mushroom Kingdom. Increases chance of Mushroom Tree for wearing.";
             uniqueID.Value = int.Parse(additionalSaveData["id"]);
             ParentSheetIndex = uniqueID.Value;
             indexInTileSheet.Value = uniqueID.Value;
