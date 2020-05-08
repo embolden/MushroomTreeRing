@@ -21,7 +21,9 @@ namespace MushroomTreeRing
     public class ModEntry : Mod
     {
         private uint chances = 0;
-        
+
+        private int timeOfDay;
+
         public override void Entry(IModHelper helper)
         {
             MushroomTreeRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
@@ -44,10 +46,15 @@ namespace MushroomTreeRing
         {
             if (!Context.IsPlayerFree) { return; }
 
+            // Does this not work?
             if (Game1.isTimePaused) { return; }
 
-            if (e.IsMultipleOf(1000)) {
+            if (timeOfDay >= Game1.timeOfDay) { return; }
+
+            if (e.IsMultipleOf(3600))
+            {
                 chances += countEquippedRings();
+                timeOfDay = Game1.timeOfDay;
                 Monitor.Log($"Tick {e.Ticks}: {chances}", LogLevel.Debug);
             }
         }
@@ -55,7 +62,8 @@ namespace MushroomTreeRing
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             chances = 0;
-            
+            timeOfDay = Game1.timeOfDay;
+
             Monitor.Log($"Day Started: {chances}", LogLevel.Debug);
         }
 
@@ -63,22 +71,46 @@ namespace MushroomTreeRing
         {
             GameLocation environment = Game1.getFarm();
 
+            Monitor.Log($"Terrain features: {environment.terrainFeatures.Count()}", LogLevel.Debug);
+
             if (environment.terrainFeatures.Count() <= 0) { return; }
 
             Monitor.Log($"Day Ending: {chances}", LogLevel.Debug);
-            
-            double basePercentChance = 0.05;
+
+            double basePercentChance = 0.00;
+
+            if (Game1.player.team.sharedDailyLuck.Value < -0.07)
+            {
+                basePercentChance = -0.03;
+            }
+            else if (Game1.player.team.sharedDailyLuck.Value < -0.02)
+            {
+                basePercentChance = -0.01;
+            }
+            else if (Game1.player.team.sharedDailyLuck.Value > 0.07)
+            {
+                basePercentChance = 0.03;
+            }
+            else if (Game1.player.team.sharedDailyLuck.Value > 0.02)
+            {
+                basePercentChance = 0.01;
+            }
+
             double chanceFivePercentMaxBonus = 0.00083 * chances;
             double foragingTwoPointFiveMaxBonus = (double)Farmer.foragingSkill / 400;
             double chanceToTransform = basePercentChance + chanceFivePercentMaxBonus + foragingTwoPointFiveMaxBonus;
 
+            Monitor.Log($"Base: {basePercentChance}", LogLevel.Debug);
             Monitor.Log($"Chance Bonus: {chanceFivePercentMaxBonus}", LogLevel.Debug);
             Monitor.Log($"Foraging ({Farmer.foragingSkill}) Bonus: {foragingTwoPointFiveMaxBonus}", LogLevel.Debug);
-            Monitor.Log($"Chance Bonus: {chanceToTransform}", LogLevel.Debug);
+            Monitor.Log($"Total Chance: {chanceToTransform}", LogLevel.Debug);
 
             for (int tries = 0; tries < chances; tries++)
             {
-                if (Game1.random.NextDouble() < chanceToTransform) { continue; }
+                double rand = Game1.random.NextDouble();
+                Monitor.Log($"Random: {rand}", LogLevel.Debug);
+                Monitor.Log($"Less than: {(rand < chanceToTransform)}", LogLevel.Debug);
+                if (rand > chanceToTransform) { continue; }
 
                 TerrainFeature feature = environment.terrainFeatures.Pairs.ElementAt(Game1.random.Next(environment.terrainFeatures.Count())).Value;
 
@@ -86,10 +118,10 @@ namespace MushroomTreeRing
                 if (!(feature is Tree)) { continue; }
 
                 Monitor.Log($"Tapped: {(feature as Tree).tapped}", LogLevel.Debug);
-                if ((feature as Tree).tapped) { continue; }
+                if ((feature as Tree).tapped.Value) { continue; }
 
                 Monitor.Log($"Growth Stage: {(feature as Tree).growthStage}", LogLevel.Debug);
-                if ((feature as Tree).growthStage < Tree.treeStage) { continue; }
+                if ((feature as Tree).growthStage.Value < Tree.treeStage) { continue; }
 
                 Monitor.Log($"MUSHROOM MUSHROOM!", LogLevel.Debug);
                 (feature as Tree).treeType.Value = Tree.mushroomTree;
@@ -125,7 +157,7 @@ namespace MushroomTreeRing
         {
             Build(getAdditionalSaveData());
         }
-        
+
         public MushroomTreeRing(int id)
         {
             Build(new Dictionary<string, string> { { "name", "Mushroom Tree Ring" }, { "id", $"{id}" } });
@@ -150,7 +182,7 @@ namespace MushroomTreeRing
 
         public void rebuild(Dictionary<string, string> additionalSaveData, object replacement)
         {
-           Build(additionalSaveData);
+            Build(additionalSaveData);
         }
 
         private void Build(IReadOnlyDictionary<string, string> additionalSaveData)

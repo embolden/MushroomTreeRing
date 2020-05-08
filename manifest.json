@@ -7,5 +7,11 @@
 	"EntryDll": "MushroomTreeRing.dll",
 	"MinimumApiVersion": "3.4.0",
 	"Dependencies": [],
-	"UpdateKeys": []
+	"UpdateKeys": [],
+	"Dependencies": [
+		{
+			"UniqueID": "Platonymous.Toolkit",
+			"MinimumVersion": "1.12.15"
+		}
+	]
 }
