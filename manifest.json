@@ -1,0 +1,11 @@
+﻿{
+	"Name": "Mushroom Tree Ring",
+	"Author": "themattfiles",
+	"Version": "0.0.1",
+	"Description": "Increases the probability of a mushroom tree for while wearing the ring.",
+	"UniqueID": "themattfiles.MushroomTreeRing",
+	"EntryDll": "MushroomTreeRing.dll",
+	"MinimumApiVersion": "3.4.0",
+	"Dependencies": [],
+	"UpdateKeys": []
+}
