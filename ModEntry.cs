@@ -24,6 +24,8 @@ namespace MushroomTreeRing
 
         private int timeOfDay;
 
+        private LogLevel _logLevel = LogLevel.Debug;
+
         public override void Entry(IModHelper helper)
         {
             MushroomTreeRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
@@ -55,7 +57,7 @@ namespace MushroomTreeRing
             {
                 chances += countEquippedRings();
                 timeOfDay = Game1.timeOfDay;
-                Monitor.Log($"Tick {e.Ticks}: {chances}", LogLevel.Debug);
+                Monitor.Log($"Tick {e.Ticks}: {chances}", _logLevel);
             }
         }
 
@@ -64,18 +66,18 @@ namespace MushroomTreeRing
             chances = 0;
             timeOfDay = Game1.timeOfDay;
 
-            Monitor.Log($"Day Started: {chances}", LogLevel.Debug);
+            Monitor.Log($"Day Started: {chances}", _logLevel);
         }
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
             GameLocation environment = Game1.getFarm();
 
-            Monitor.Log($"Terrain features: {environment.terrainFeatures.Count()}", LogLevel.Debug);
+            Monitor.Log($"Terrain features: {environment.terrainFeatures.Count()}", _logLevel);
 
             if (environment.terrainFeatures.Count() <= 0) { return; }
 
-            Monitor.Log($"Day Ending: {chances}", LogLevel.Debug);
+            Monitor.Log($"Day Ending: {chances}", _logLevel);
 
             double basePercentChance = 0.00;
 
@@ -100,30 +102,30 @@ namespace MushroomTreeRing
             double foragingTwoPointFiveMaxBonus = (double)Farmer.foragingSkill / 400;
             double chanceToTransform = basePercentChance + chanceFivePercentMaxBonus + foragingTwoPointFiveMaxBonus;
 
-            Monitor.Log($"Base: {basePercentChance}", LogLevel.Debug);
-            Monitor.Log($"Chance Bonus: {chanceFivePercentMaxBonus}", LogLevel.Debug);
-            Monitor.Log($"Foraging ({Farmer.foragingSkill}) Bonus: {foragingTwoPointFiveMaxBonus}", LogLevel.Debug);
-            Monitor.Log($"Total Chance: {chanceToTransform}", LogLevel.Debug);
+            Monitor.Log($"Base: {basePercentChance}", _logLevel);
+            Monitor.Log($"Chance Bonus: {chanceFivePercentMaxBonus}", _logLevel);
+            Monitor.Log($"Foraging ({Farmer.foragingSkill}) Bonus: {foragingTwoPercentMaxBonus}", _logLevel);
+            Monitor.Log($"Total Chance: {chanceToTransform}", _logLevel);
 
             for (int tries = 0; tries < chances; tries++)
             {
                 double rand = Game1.random.NextDouble();
-                Monitor.Log($"Random: {rand}", LogLevel.Debug);
-                Monitor.Log($"Less than: {(rand < chanceToTransform)}", LogLevel.Debug);
+                Monitor.Log($"Random: {rand}", _logLevel);
+                Monitor.Log($"Less than: {(rand < chanceToTransform)}", _logLevel);
                 if (rand > Math.Max(0.01, chanceToTransform)) { continue; }
 
                 TerrainFeature feature = environment.terrainFeatures.Pairs.ElementAt(Game1.random.Next(environment.terrainFeatures.Count())).Value;
 
-                Monitor.Log(feature.ToString(), LogLevel.Debug);
+                Monitor.Log(feature.ToString(), _logLevel);
                 if (!(feature is Tree)) { continue; }
 
-                Monitor.Log($"Tapped: {(feature as Tree).tapped}", LogLevel.Debug);
+                Monitor.Log($"Tapped: {(feature as Tree).tapped}", _logLevel);
                 if ((feature as Tree).tapped.Value) { continue; }
 
-                Monitor.Log($"Growth Stage: {(feature as Tree).growthStage}", LogLevel.Debug);
+                Monitor.Log($"Growth Stage: {(feature as Tree).growthStage}", _logLevel);
                 if ((feature as Tree).growthStage.Value < Tree.treeStage) { continue; }
 
-                Monitor.Log($"MUSHROOM MUSHROOM!", LogLevel.Debug);
+                Monitor.Log($"MUSHROOM MUSHROOM!", _logLevel);
                 (feature as Tree).treeType.Value = Tree.mushroomTree;
                 (feature as Tree).loadSprite();
             }
