@@ -30,9 +30,9 @@ namespace MushroomTreeRing
             MushroomTreeRing.price = 420;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+            helper.Events.GameLoop.DayEnding    += GameLoop_DayEnding;
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -195,8 +195,7 @@ namespace MushroomTreeRing
             indexInTileSheet.Value = uniqueID.Value;
         }
 
-        public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency,
-    float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
+        public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
         {
             spriteBatch.Draw(texture, location + new Vector2(Game1.tileSize / 2, Game1.tileSize / 2) * scaleSize,
                 Game1.getSourceRectForStandardTileSheet(texture, 0, 16, 16), color * transparency, 0.0f,
