@@ -134,7 +134,7 @@ namespace MushroomTreeRing
                 }
             }
 
-            double chanceFivePercentMaxBonus = Config.MushroomTreeRingUseChanceBonus ? Math.Max(5.0, Math.Min(5.0, Config.MushroomTreeRingChancePerIntervalPercent * chances)) : 0.0;
+            double chanceFivePercentMaxBonus = Config.MushroomTreeRingUseChanceBonus ? Math.Min(.05, Config.MushroomTreeRingChancePerIntervalPercent * chances) : 0.0;
             double foragingTwoPercentMaxBonus = Config.MushroomTreeRingUseForagingBonus ? ((double)Farmer.foragingSkill / 500) : 0.0;
             double chanceToTransform = basePercentChance + chanceFivePercentMaxBonus + foragingTwoPercentMaxBonus;
 
