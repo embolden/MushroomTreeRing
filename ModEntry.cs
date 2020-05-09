@@ -138,9 +138,9 @@ namespace MushroomTreeRing
 
         }
 
-        private uint countEquippedRings()
+        private int countEquippedRings()
         {
-            uint equippedRings = 0;
+            int equippedRings = 0;
 
             if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value is MushroomTreeRing)
             {
