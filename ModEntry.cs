@@ -31,7 +31,7 @@ namespace MushroomTreeRing
 
         private WearMoreRingsAPI wearMoreRingsAPI;
 
-        private MushroomTreeRing mushroomTreeRing;
+        private MushroomKingsRing mushroomTreeRing;
 
         private int turned = 0;
 
@@ -39,9 +39,9 @@ namespace MushroomTreeRing
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            MushroomTreeRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
-            MushroomTreeRing.price   = Config.MushroomTreeRingPrice;
-            MushroomTreeRing.stock   = Config.MushroomTreeRingStock;
+            MushroomKingsRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
+            MushroomKingsRing.price   = Config.MushroomTreeRingPrice;
+            MushroomKingsRing.stock   = Config.MushroomTreeRingStock;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded   += GameLoop_SaveLoaded;
@@ -52,13 +52,15 @@ namespace MushroomTreeRing
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            mushroomTreeRing = new MushroomTreeRing();
-            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price, MushroomTreeRing.stock);
-            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
+
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            mushroomTreeRing = new MushroomKingsRing();
+            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomKingsRing.price, MushroomKingsRing.stock);
+            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
+
             wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
 
             var api = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
@@ -197,12 +199,12 @@ namespace MushroomTreeRing
 
             int equippedRings = 0;
 
-            if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value is MushroomTreeRing)
+            if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value is MushroomKingsRing)
             {
                 equippedRings++;
             }
 
-            if (Game1.player.rightRing.Value != null && Game1.player.rightRing.Value is MushroomTreeRing)
+            if (Game1.player.rightRing.Value != null && Game1.player.rightRing.Value is MushroomKingsRing)
             {
                 equippedRings++;
             }
