@@ -49,25 +49,26 @@ namespace MushroomTreeRing
             wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
 
             var api = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
-            if (api == null) { return; }
-            api.RegisterModConfig(ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
-
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Enabled", "Control the magical effects of the ring", () => Config.MushroomTreeRingEnabled, (bool val) => Config.MushroomTreeRingEnabled = val);
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Price", "How much gold does the ring cost?", () => Config.MushroomTreeRingPrice, (int val) => Config.MushroomTreeRingPrice = val);
-            api.RegisterChoiceOption(ModManifest, "Mushroom King's Ring Shopkeeper", "Who sells the ring?", () => Config.MushroomTreeRingShopkeeper, (string val) => Config.MushroomTreeRingShopkeeper = val, new string[] { "Pierre", "Gus", "Robin", "Willy", "Marnie", "Dwarf", "Krobus" });
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Price", "How many rings exist?", () => Config.MushroomTreeRingQuantity, (int val) => Config.MushroomTreeRingQuantity = val);
-            api.RegisterClampedOption(ModManifest, "Mushroom King's Ring Base % Chance", "The base % chance that a tree can change", () => Convert.ToSingle(Config.MushroomTreeRingBasePercentChance), (float val) => Config.MushroomTreeRingBasePercentChance = Convert.ToDouble(val), 0, 1);
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Frequency to Gain Chance", "60 'ticks' per second, 60 seconds per minute", () => (int)Config.MushroomTreeRingChanceGainFrequency, (int val) => Config.MushroomTreeRingChanceGainFrequency = (uint)val);
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Foraging Bonus", "Get up to 2% based on current foraging skill?", () => Config.MushroomTreeRingUseForagingBonus, (bool val) => Config.MushroomTreeRingUseForagingBonus = val);
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Luck Bonus", "Use the day's luck in calculating chance?", () => Config.MushroomTreeRingUseLuckBonus, (bool val) => Config.MushroomTreeRingUseLuckBonus = val);
-            api.RegisterClampedOption(ModManifest, "Mushroom King's Ring Somewhat Lucky", "The % modified by being somewhat lucky", () => Convert.ToSingle(Config.MushroomTreeRingSomewhatLuckyBonusAmount), (float val) => Config.MushroomTreeRingSomewhatLuckyBonusAmount = Convert.ToDouble(val), 0, 1);
-            api.RegisterClampedOption(ModManifest, "Mushroom King's Ring Very Lucky", "The % modified by being very lucky", () => Convert.ToSingle(Config.MushroomTreeRingVeryLuckBonusAmount), (float val) => Config.MushroomTreeRingVeryLuckBonusAmount = Convert.ToDouble(val), 0, 1);
-            api.RegisterSimpleOption(ModManifest, "Mushroom King's Ring Chance Bonus", "Increase the chance of a Mushroom Tree for each chance gained.", () => Config.MushroomTreeRingUseChanceBonus, (bool val) => Config.MushroomTreeRingUseChanceBonus = val);
-            api.RegisterClampedOption(ModManifest, "Mushroom King's Percent Gained Per Chance", "The % modified per chance gained.", () => Convert.ToSingle(Config.MushroomTreeRingChancePerIntervalPercent), (float val) => Config.MushroomTreeRingChancePerIntervalPercent = Convert.ToDouble(val), 0, 1);
 
             MushroomTreeRing mushroomTreeRing = new MushroomTreeRing();
             ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price, MushroomTreeRing.quantity);
             ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
+            if (api != null)
+            {
+                api.RegisterModConfig(ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
+                api.RegisterSimpleOption(ModManifest, "Enabled", "Control the magical effects of the ring", () => Config.MushroomTreeRingEnabled, (bool val) => Config.MushroomTreeRingEnabled = val);
+                api.RegisterSimpleOption(ModManifest, "Price", "How much gold does the ring cost?", () => Config.MushroomTreeRingPrice, (int val) => Config.MushroomTreeRingPrice = val);
+                api.RegisterChoiceOption(ModManifest, "Shopkeeper", "Who sells the ring?", () => Config.MushroomTreeRingShopkeeper, (string val) => Config.MushroomTreeRingShopkeeper = val, new string[] { "Pierre", "Gus", "Robin", "Willy", "Marnie", "Dwarf", "Krobus" });
+                api.RegisterSimpleOption(ModManifest, "Stock", "How many rings exist?", () => Config.MushroomTreeRingStock, (int val) => Config.MushroomTreeRingStock = val);
+                api.RegisterClampedOption(ModManifest, "Base % Chance", "The base % chance that a tree can change", () => Convert.ToSingle(Config.MushroomTreeRingBasePercentChance), (float val) => Config.MushroomTreeRingBasePercentChance = Convert.ToDouble(val), 0, 1);
+                api.RegisterSimpleOption(ModManifest, "Frequency to Gain Chance", "60 'ticks' per second, 60 seconds per minute", () => (int)Config.MushroomTreeRingChanceGainFrequency, (int val) => Config.MushroomTreeRingChanceGainFrequency = (uint)val);
+                api.RegisterSimpleOption(ModManifest, "Foraging Bonus", "Get up to 2% based on current foraging skill?", () => Config.MushroomTreeRingUseForagingBonus, (bool val) => Config.MushroomTreeRingUseForagingBonus = val);
+                api.RegisterSimpleOption(ModManifest, "Luck Bonus", "Use the day's luck in calculating chance?", () => Config.MushroomTreeRingUseLuckBonus, (bool val) => Config.MushroomTreeRingUseLuckBonus = val);
+                api.RegisterClampedOption(ModManifest, "Somewhat Lucky", "The % modified by being somewhat lucky", () => Convert.ToSingle(Config.MushroomTreeRingSomewhatLuckyBonusAmount), (float val) => Config.MushroomTreeRingSomewhatLuckyBonusAmount = Convert.ToDouble(val), 0, 1);
+                api.RegisterClampedOption(ModManifest, "Very Lucky", "The % modified by being very lucky", () => Convert.ToSingle(Config.MushroomTreeRingVeryLuckBonusAmount), (float val) => Config.MushroomTreeRingVeryLuckBonusAmount = Convert.ToDouble(val), 0, 1);
+                api.RegisterSimpleOption(ModManifest, "Chance Bonus", "Increase the chance of a Mushroom Tree for each chance gained.", () => Config.MushroomTreeRingUseChanceBonus, (bool val) => Config.MushroomTreeRingUseChanceBonus = val);
+                api.RegisterClampedOption(ModManifest, "Percent Gained Per Chance", "The % modified per chance gained.", () => Convert.ToSingle(Config.MushroomTreeRingChancePerIntervalPercent), (float val) => Config.MushroomTreeRingChancePerIntervalPercent = Convert.ToDouble(val), 0, 1);
+            }
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
