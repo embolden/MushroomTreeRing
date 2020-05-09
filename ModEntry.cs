@@ -20,16 +20,21 @@ namespace MushroomTreeRing
 {
     public class ModEntry : Mod
     {
-        private uint chances = 0;
+        private int chances = 0;
 
         private int timeOfDay;
 
         private LogLevel _logLevel = LogLevel.Debug;
 
+        private WearMoreRingsAPI wearMoreRingsAPI;
+
+        private InventoryItem ring;
+
         public override void Entry(IModHelper helper)
         {
             MushroomTreeRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
             MushroomTreeRing.price = 420;
+            MushroomTreeRing.maxBuyable = 1;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
@@ -155,6 +160,7 @@ namespace MushroomTreeRing
     {
         public static Texture2D texture;
         public new static int price;
+        public static int maxBuyable;
 
         public MushroomTreeRing()
         {
