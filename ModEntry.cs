@@ -44,15 +44,9 @@ namespace MushroomTreeRing
             MushroomKingsRing.stock   = Config.MushroomTreeRingStock;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded   += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.DayEnding    += GameLoop_DayEnding;
-        }
-
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
