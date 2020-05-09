@@ -32,6 +32,8 @@ namespace MushroomTreeRing
 
         private InventoryItem ring;
 
+        private int turned = 0;
+
         public override void Entry(IModHelper helper)
         {
             MushroomTreeRing.texture  = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
@@ -74,6 +76,13 @@ namespace MushroomTreeRing
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             if (!Config.MushroomTreeRingEnabled) { return; }
+
+            if (turned > 0)
+            {
+                Game1.addHUDMessage(new HUDMessage( new StardewValley.Object(420, 1).Type, turned, true, Color.OrangeRed));
+
+                turned = 0;
+            }
 
             chances = 0;
             timeOfDay = Game1.timeOfDay;
@@ -165,6 +174,7 @@ namespace MushroomTreeRing
                 Monitor.Log($"MUSHROOM MUSHROOM!", _logLevel);
                 (feature as Tree).treeType.Value = Tree.mushroomTree;
                 (feature as Tree).loadSprite();
+                turned++;
             }
 
         }
