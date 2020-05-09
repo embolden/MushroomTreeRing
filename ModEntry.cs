@@ -15,6 +15,7 @@ using PyTK.CustomElementHandler;
 using PyTK.Extensions;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using xTile.Dimensions;
 
 namespace MushroomTreeRing
 {
@@ -30,20 +31,30 @@ namespace MushroomTreeRing
 
         private WearMoreRingsAPI wearMoreRingsAPI;
 
-        private InventoryItem ring;
+        private MushroomTreeRing mushroomTreeRing;
 
         private int turned = 0;
 
         public override void Entry(IModHelper helper)
         {
-            MushroomTreeRing.texture  = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
-            MushroomTreeRing.price    = Config.MushroomTreeRingPrice;
-            MushroomTreeRing.quantity = Config.MushroomTreeRingQuantity;
+            Config = Helper.ReadConfig<ModConfig>();
+
+            MushroomTreeRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
+            MushroomTreeRing.price   = Config.MushroomTreeRingPrice;
+            MushroomTreeRing.stock   = Config.MushroomTreeRingStock;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded   += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.DayEnding    += GameLoop_DayEnding;
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            mushroomTreeRing = new MushroomTreeRing();
+            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price, MushroomTreeRing.stock);
+            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -51,10 +62,6 @@ namespace MushroomTreeRing
             wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
 
             var api = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
-
-            MushroomTreeRing mushroomTreeRing = new MushroomTreeRing();
-            ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price, MushroomTreeRing.quantity);
-            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
             if (api != null)
             {
                 api.RegisterModConfig(ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
@@ -181,9 +188,11 @@ namespace MushroomTreeRing
 
         private int countEquippedRings()
         {
+            Monitor.Log($"{mushroomTreeRing.ParentSheetIndex}", _logLevel);
+
             if (wearMoreRingsAPI != null)
             {
-                return wearMoreRingsAPI.CountEquippedRings(Game1.player, ring.item.ParentSheetIndex);
+                return wearMoreRingsAPI.CountEquippedRings(Game1.player, mushroomTreeRing.ParentSheetIndex);
             }
 
             int equippedRings = 0;
