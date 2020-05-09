@@ -45,8 +45,10 @@ namespace MushroomTreeRing
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             MushroomTreeRing mushroomTreeRing = new MushroomTreeRing();
-            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price);
+            ring = new InventoryItem(mushroomTreeRing, MushroomTreeRing.price, MushroomTreeRing.maxBuyable);
             ring.addToNPCShop("Pierre");
+
+            wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
         }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -140,6 +142,11 @@ namespace MushroomTreeRing
 
         private int countEquippedRings()
         {
+            if (wearMoreRingsAPI != null)
+            {
+                return wearMoreRingsAPI.CountEquippedRings(Game1.player, ring.item.ParentSheetIndex);
+            }
+
             int equippedRings = 0;
 
             if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value is MushroomTreeRing)
@@ -220,5 +227,23 @@ namespace MushroomTreeRing
         {
             return new MushroomTreeRing();
         }
+    }
+
+    public interface WearMoreRingsAPI
+    {
+        /// <summary>
+        /// Count how many of the specified ring type the given player has equipped. This includes the vanilla left & right rings.
+        /// </summary>
+        /// <returns>How many of the specified ring the given player has equipped.</returns>
+        /// <param name="f">The farmer/farmhand whose inventory is being checked. For the local player, use Game1.player.</param>
+        /// <param name="which">The parentSheetIndex of the ring.</param>
+        int CountEquippedRings(StardewValley.Farmer f, int which);
+
+        /// <summary>
+        /// Returns a list of all rings the player has equipped. This includes the vanilla left & right rings.
+        /// </summary>
+        /// <returns>A list of all equiped rings.</returns>
+        /// <param name="f">The farmer/farmhand whose inventory is being checked. For the local player, use Game1.player.</param>
+        System.Collections.Generic.IEnumerable<StardewValley.Objects.Ring> GetAllRings(StardewValley.Farmer f);
     }
 }
