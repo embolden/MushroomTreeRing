@@ -69,7 +69,7 @@
   <ItemGroup>
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="MushroomTreeRing.cs" />
+    <Compile Include="MushroomKingsRing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
