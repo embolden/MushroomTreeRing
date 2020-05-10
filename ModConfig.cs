@@ -9,9 +9,6 @@ namespace MushroomTreeRing
     class ModConfig
     {
         public bool MushroomTreeRingEnabled { get; set; } = true;
-        public int MushroomTreeRingPrice { get; set; } = 1;
-        public string MushroomTreeRingShopkeeper { get; set; } = "Pierre";
-        public int MushroomTreeRingStock { get; set; } = 1;
         public double MushroomTreeRingBasePercentChance { get; set; } = 0.00;
         public uint MushroomTreeRingChanceGainFrequency { get; set; } = 3600;
         public bool MushroomTreeRingUseForagingBonus { get; set; } = true;

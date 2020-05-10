@@ -1,7 +1,7 @@
 ﻿{
 	"Name": "Mushroom Tree Ring",
 	"Author": "themattfiles",
-	"Version": "0.0.1",
+	"Version": "0.0.1-beta",
 	"Description": "Increases the probability of a mushroom tree for while wearing the ring.",
 	"UniqueID": "themattfiles.MushroomTreeRing",
 	"EntryDll": "MushroomTreeRing.dll",
@@ -9,9 +9,7 @@
 	"Dependencies": [],
 	"UpdateKeys": [ "Nexus:6023" ],
 	"Dependencies": [
-		{
-			"UniqueID": "Platonymous.Toolkit",
-			"MinimumVersion": "1.12.15"
-		}
+		{ "UniqueID": "spacechase0.JsonAssets" },
+		{ "UniqueID": "spacechase0.SpaceCore" }
 	]
 }

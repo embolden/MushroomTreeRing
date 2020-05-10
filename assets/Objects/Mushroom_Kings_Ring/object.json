@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Mushroom King's Ring",
+	"Description": "Embued with energy from the Mushroom Kingdom. Increases the chance of Mushroom Trees spawning.",
+	"Category": "Ring",
+	"Edibility": -300,
+	"Price": 1,
+	"CanPurchase": true,
+	"PurchaseFrom": "Pierre",
+	"PurchasePrice": 1
+}

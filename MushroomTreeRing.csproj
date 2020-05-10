@@ -67,16 +67,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonAssetsApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="MushroomKingsRing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\content-pack.json" />
+    <None Include="assets\Objects\Mushroom_Kings_Ring\object.json" />
     <None Include="manifest.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\mushroom-tree-ring.png" />
+    <Content Include="assets\Objects\Mushroom_Kings_Ring\object.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig">

@@ -8,14 +8,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.TerrainFeatures;
-using PyTK;
-using PyTK.Types;
-using StardewValley.Objects;
-using PyTK.CustomElementHandler;
-using PyTK.Extensions;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
-using xTile.Dimensions;
 
 namespace MushroomTreeRing
 {
@@ -23,30 +17,25 @@ namespace MushroomTreeRing
     {
         private ModConfig Config;
 
+        private JsonAssetsAPI ja;
+        
+        private WearMoreRingsAPI wearMoreRingsAPI;
+        
+        private LogLevel _logLevel = LogLevel.Debug;
+
+        public int Mushroom_Kings_Ring_ID { get { return ja.GetObjectId("Mushroom King's Ring"); } }
+        
         private int chances = 0;
 
         private int timeOfDay;
 
-        private LogLevel _logLevel = LogLevel.Debug;
-
-        private WearMoreRingsAPI wearMoreRingsAPI;
-
-        private MushroomKingsRing mushroomTreeRing;
-
         private int turned = 0;
-
-        // private CustomObjectData thing;
 
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            MushroomKingsRing.texture = helper.Content.Load<Texture2D>(Path.Combine("assets", "mushroom-tree-ring.png"));
-            MushroomKingsRing.price   = Config.MushroomTreeRingPrice;
-            MushroomKingsRing.stock   = Config.MushroomTreeRingStock;
-
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded   += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.DayEnding    += GameLoop_DayEnding;
@@ -54,33 +43,33 @@ namespace MushroomTreeRing
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            var api = Helper.ModRegistry.GetApi<JsonAssetsAPI>("spacechase0.JsonAssets");
+            if (api == null)
+            {
+                Monitor.Log("Install JsonAssets", LogLevel.Error);
+                return;
+            }
+
+            ja = api;
+
+            api.LoadAssets(Path.Combine(Helper.DirectoryPath, "assets"));
+
             wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
 
-            var api = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
-            if (api != null)
-            {
-                api.RegisterModConfig(ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
-                api.RegisterSimpleOption(ModManifest, "Enabled", "Control the magical effects of the ring", () => Config.MushroomTreeRingEnabled, (bool val) => Config.MushroomTreeRingEnabled = val);
-                api.RegisterSimpleOption(ModManifest, "Price", "How much gold does the ring cost?", () => Config.MushroomTreeRingPrice, (int val) => Config.MushroomTreeRingPrice = val);
-                api.RegisterChoiceOption(ModManifest, "Shopkeeper", "Who sells the ring?", () => Config.MushroomTreeRingShopkeeper, (string val) => Config.MushroomTreeRingShopkeeper = val, new string[] { "Pierre", "Gus", "Robin", "Willy", "Marnie", "Dwarf", "Krobus" });
-                api.RegisterSimpleOption(ModManifest, "Stock", "How many rings exist?", () => Config.MushroomTreeRingStock, (int val) => Config.MushroomTreeRingStock = val);
-                api.RegisterClampedOption(ModManifest, "Base % Chance", "The base % chance that a tree can change", () => Convert.ToSingle(Config.MushroomTreeRingBasePercentChance), (float val) => Config.MushroomTreeRingBasePercentChance = Convert.ToDouble(val), 0, 1);
-                api.RegisterSimpleOption(ModManifest, "Frequency to Gain Chance", "60 'ticks' per second, 60 seconds per minute", () => (int)Config.MushroomTreeRingChanceGainFrequency, (int val) => Config.MushroomTreeRingChanceGainFrequency = (uint)val);
-                api.RegisterSimpleOption(ModManifest, "Foraging Bonus", "Get up to 2% based on current foraging skill?", () => Config.MushroomTreeRingUseForagingBonus, (bool val) => Config.MushroomTreeRingUseForagingBonus = val);
-                api.RegisterSimpleOption(ModManifest, "Luck Bonus", "Use the day's luck in calculating chance?", () => Config.MushroomTreeRingUseLuckBonus, (bool val) => Config.MushroomTreeRingUseLuckBonus = val);
-                api.RegisterClampedOption(ModManifest, "Somewhat Lucky", "The % modified by being somewhat lucky", () => Convert.ToSingle(Config.MushroomTreeRingSomewhatLuckyBonusAmount), (float val) => Config.MushroomTreeRingSomewhatLuckyBonusAmount = Convert.ToDouble(val), 0, 1);
-                api.RegisterClampedOption(ModManifest, "Very Lucky", "The % modified by being very lucky", () => Convert.ToSingle(Config.MushroomTreeRingVeryLuckBonusAmount), (float val) => Config.MushroomTreeRingVeryLuckBonusAmount = Convert.ToDouble(val), 0, 1);
-                api.RegisterSimpleOption(ModManifest, "Chance Bonus", "Increase the chance of a Mushroom Tree for each chance gained.", () => Config.MushroomTreeRingUseChanceBonus, (bool val) => Config.MushroomTreeRingUseChanceBonus = val);
-                api.RegisterClampedOption(ModManifest, "Percent Gained Per Chance", "The % modified per chance gained.", () => Convert.ToSingle(Config.MushroomTreeRingChancePerIntervalPercent), (float val) => Config.MushroomTreeRingChancePerIntervalPercent = Convert.ToDouble(val), 0, 1);
-            }
-        }
+            var api2 = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+            
+            if (api2 == null) { return; }
 
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-            mushroomTreeRing = new MushroomKingsRing();
-            var thing = CustomObjectData.newObject("themattfiles.MushroomTreeRing", MushroomKingsRing.texture, Color.White, "Mushroom King's Ring", "Embued with energy from the Mushroom Kingdom. Increases chance of Mushroom Tree for wearing.", 0, customType: typeof(MushroomKingsRing));
-            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomKingsRing.price, MushroomKingsRing.stock);
-            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
+            api2.RegisterModConfig(ModManifest, () => Config = new ModConfig(), () => Helper.WriteConfig(Config));
+            api2.RegisterSimpleOption(ModManifest, "Enabled", "Control the magical effects of the ring", () => Config.MushroomTreeRingEnabled, (bool val) => Config.MushroomTreeRingEnabled = val);
+            api2.RegisterClampedOption(ModManifest, "Base % Chance", "The base % chance that a tree can change", () => Convert.ToSingle(Config.MushroomTreeRingBasePercentChance), (float val) => Config.MushroomTreeRingBasePercentChance = Convert.ToDouble(val), 0, 1);
+            api2.RegisterSimpleOption(ModManifest, "Frequency to Gain Chance", "60 'ticks' per second, 60 seconds per minute", () => (int)Config.MushroomTreeRingChanceGainFrequency, (int val) => Config.MushroomTreeRingChanceGainFrequency = (uint)val);
+            api2.RegisterSimpleOption(ModManifest, "Foraging Bonus", "Get up to 2% based on current foraging skill?", () => Config.MushroomTreeRingUseForagingBonus, (bool val) => Config.MushroomTreeRingUseForagingBonus = val);
+            api2.RegisterSimpleOption(ModManifest, "Luck Bonus", "Use the day's luck in calculating chance?", () => Config.MushroomTreeRingUseLuckBonus, (bool val) => Config.MushroomTreeRingUseLuckBonus = val);
+            api2.RegisterClampedOption(ModManifest, "Somewhat Lucky", "The % modified by being somewhat lucky", () => Convert.ToSingle(Config.MushroomTreeRingSomewhatLuckyBonusAmount), (float val) => Config.MushroomTreeRingSomewhatLuckyBonusAmount = Convert.ToDouble(val), 0, 1);
+            api2.RegisterClampedOption(ModManifest, "Very Lucky", "The % modified by being very lucky", () => Convert.ToSingle(Config.MushroomTreeRingVeryLuckBonusAmount), (float val) => Config.MushroomTreeRingVeryLuckBonusAmount = Convert.ToDouble(val), 0, 1);
+            api2.RegisterSimpleOption(ModManifest, "Chance Bonus", "Increase the chance of a Mushroom Tree for each chance gained.", () => Config.MushroomTreeRingUseChanceBonus, (bool val) => Config.MushroomTreeRingUseChanceBonus = val);
+            api2.RegisterClampedOption(ModManifest, "Percent Gained Per Chance", "The % modified per chance gained.", () => Convert.ToSingle(Config.MushroomTreeRingChancePerIntervalPercent), (float val) => Config.MushroomTreeRingChancePerIntervalPercent = Convert.ToDouble(val), 0, 1);
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -191,26 +180,22 @@ namespace MushroomTreeRing
 
         private int countEquippedRings()
         {
-            Monitor.Log($"{mushroomTreeRing.indexInTileSheet}", _logLevel);
-            Monitor.Log($"{mushroomTreeRing.ParentSheetIndex}", _logLevel);
-            Monitor.Log($"{mushroomTreeRing.uniqueID}", _logLevel);
 
-            // Monitor.Log($"{Game1.player.leftRing.Value.indexInTileSheet.Value}", _logLevel);
-            // Monitor.Log($"{Game1.player.rightRing.Value.indexInTileSheet.Value}", _logLevel);
+            Monitor.Log($"{Mushroom_Kings_Ring_ID}", _logLevel);
 
             if (wearMoreRingsAPI != null)
             {
-                return wearMoreRingsAPI.CountEquippedRings(Game1.player, mushroomTreeRing.ParentSheetIndex);
+                return wearMoreRingsAPI.CountEquippedRings(Game1.player, Mushroom_Kings_Ring_ID);
             }
 
             int equippedRings = 0;
 
-            if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value is MushroomKingsRing)
+            if (Game1.player.leftRing.Value != null && Game1.player.leftRing.Value.ParentSheetIndex == Mushroom_Kings_Ring_ID)
             {
                 equippedRings++;
             }
 
-            if (Game1.player.rightRing.Value != null && Game1.player.rightRing.Value is MushroomKingsRing)
+            if (Game1.player.rightRing.Value != null && Game1.player.leftRing.Value.ParentSheetIndex == Mushroom_Kings_Ring_ID)
             {
                 equippedRings++;
             }
