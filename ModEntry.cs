@@ -35,6 +35,8 @@ namespace MushroomTreeRing
 
         private int turned = 0;
 
+        // private CustomObjectData thing;
+
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
@@ -44,6 +46,7 @@ namespace MushroomTreeRing
             MushroomKingsRing.stock   = Config.MushroomTreeRingStock;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded   += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted   += GameLoop_DayStarted;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.DayEnding    += GameLoop_DayEnding;
@@ -51,10 +54,6 @@ namespace MushroomTreeRing
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            mushroomTreeRing = new MushroomKingsRing();
-            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomKingsRing.price, MushroomKingsRing.stock);
-            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
-
             wearMoreRingsAPI = Helper.ModRegistry.GetApi<WearMoreRingsAPI>("bcmpinc.WearMoreRings");
 
             var api = Helper.ModRegistry.GetApi<GenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
@@ -74,6 +73,14 @@ namespace MushroomTreeRing
                 api.RegisterSimpleOption(ModManifest, "Chance Bonus", "Increase the chance of a Mushroom Tree for each chance gained.", () => Config.MushroomTreeRingUseChanceBonus, (bool val) => Config.MushroomTreeRingUseChanceBonus = val);
                 api.RegisterClampedOption(ModManifest, "Percent Gained Per Chance", "The % modified per chance gained.", () => Convert.ToSingle(Config.MushroomTreeRingChancePerIntervalPercent), (float val) => Config.MushroomTreeRingChancePerIntervalPercent = Convert.ToDouble(val), 0, 1);
             }
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            mushroomTreeRing = new MushroomKingsRing();
+            var thing = CustomObjectData.newObject("themattfiles.MushroomTreeRing", MushroomKingsRing.texture, Color.White, "Mushroom King's Ring", "Embued with energy from the Mushroom Kingdom. Increases chance of Mushroom Tree for wearing.", 0, customType: typeof(MushroomKingsRing));
+            InventoryItem ring = new InventoryItem(mushroomTreeRing, MushroomKingsRing.price, MushroomKingsRing.stock);
+            ring.addToNPCShop(Config.MushroomTreeRingShopkeeper);
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -184,7 +191,12 @@ namespace MushroomTreeRing
 
         private int countEquippedRings()
         {
+            Monitor.Log($"{mushroomTreeRing.indexInTileSheet}", _logLevel);
             Monitor.Log($"{mushroomTreeRing.ParentSheetIndex}", _logLevel);
+            Monitor.Log($"{mushroomTreeRing.uniqueID}", _logLevel);
+
+            // Monitor.Log($"{Game1.player.leftRing.Value.indexInTileSheet.Value}", _logLevel);
+            // Monitor.Log($"{Game1.player.rightRing.Value.indexInTileSheet.Value}", _logLevel);
 
             if (wearMoreRingsAPI != null)
             {

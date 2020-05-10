@@ -27,10 +27,10 @@ namespace MushroomTreeRing
         public static int stock;
         public Dictionary<string, string> getAdditionalSaveData()
         {
-            // var id = indexInTileSheet.Value == default ? Guid.NewGuid().GetHashCode() : indexInTileSheet.Value;
+            var id = indexInTileSheet.Value == default ? 80085 : indexInTileSheet.Value;
             Dictionary<string, string> savedata = new Dictionary<string, string>();// { { "name", Name }, { "id", $"{id}" } };
             savedata.Add("Name", Name);
-            // savedata.Add("id", id.ToString());
+            savedata.Add("id", id.ToString());
             return savedata;
         }
         public object getReplacement()
@@ -74,7 +74,7 @@ namespace MushroomTreeRing
 
             indexInTileSheet.Value = int.Parse(additionalSaveData["id"]);
             ParentSheetIndex = indexInTileSheet;
-            // uniqueID.Value = int.Parse(additionalSaveData["id"]);
+            uniqueID.Value = Guid.NewGuid().GetHashCode();
         }
 
         public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
@@ -86,13 +86,13 @@ namespace MushroomTreeRing
 
         public override Item getOne()
         {
-            return new MushroomKingsRing(indexInTileSheet);
+            return new MushroomKingsRing();
         }
 
         public ICustomObject recreate(Dictionary<string, string> additionalSaveData, object replacement)
         {
-            return (ICustomObject) CustomObjectData.collection[additionalSaveData["id"]].getObject();
-            // return new MushroomKingsRing();
+            // return (ICustomObject) CustomObjectData.collection[additionalSaveData["id"]].getObject();
+            return new MushroomKingsRing(int.Parse(additionalSaveData["id"]));
         }
     }
 }
