@@ -21,7 +21,7 @@ namespace MushroomTreeRing
         
         private WearMoreRingsAPI wearMoreRingsAPI;
         
-        private LogLevel _logLevel = LogLevel.Debug;
+        private LogLevel _logLevel = LogLevel.Trace;
 
         public int Mushroom_Kings_Ring_ID { get { return ja.GetObjectId("Mushroom King's Ring"); } }
         
@@ -78,7 +78,7 @@ namespace MushroomTreeRing
 
             if (turned > 0)
             {
-                Game1.addHUDMessage(new HUDMessage( new StardewValley.Object(420, 1).Type, turned, true, Color.OrangeRed));
+                Game1.addHUDMessage(new HUDMessage($"The magic of the Mushroom King's Ring enchanted {(turned > 1 ? turned.ToString() : "a")} tree{(turned > 1 ? "s" : "")} on your farm.", Color.Purple, HUDMessage.defaultTime) { noIcon = true });
 
                 turned = 0;
             }
